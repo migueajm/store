@@ -1,19 +1,19 @@
-class FetchServiceError extends Error {
-  constructor(message, statusCode = null, statusText = '') {
-    super(message);
-    this.name = 'FetchServiceError';
-    this.statusCode = statusCode;
-    this.statusText = statusText;
-    this.stack = (new Error()).stack;
-  }
-}
+import { FetchServiceError } from "./error/fetch_service_error.js";
+import { FunctionExpectedError } from "./error/function_expected_error.js";
 
-class FetchService {
+/**
+ * Clase para resolver peticiones HTTP.
+ * @param {string} baseURL 'Url base.'
+ */
+export class FetchService {
   constructor(baseURL = '') {
     this.baseURL = baseURL;
     this.defaultHeaders = {
       'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest'
     };
+    this.errorfunction = null;
+    this.form = null;
   }
 
   /**
@@ -72,21 +72,38 @@ class FetchService {
     try {
       const response = await fetch(url, options);
       clearTimeout(timeoutId);
-
+      const contentType = response.headers.get('Content-Type') || '';
+      const isFile = contentType.includes('application/octet-stream') || contentType.includes('image/') || contentType.includes('application/pdf');
+      const isJson = contentType.includes('application/json');
       if (!response.ok) {
+        let message = response.statusText;
+        let text = null;
+        if(response.status < 500){
+          if(isJson) {
+            const json = await response.json();
+            message = json?.message ?? json?.error ?? response.statusText;
+          }
+        }
         throw new FetchServiceError(
-          `HTTP Error: ${response.status} ${response.statusText}`,
+          `HTTP Error: ${response.status} ${message}`,
           response.status,
           response.statusText
         );
       }
 
-      const contentType = response.headers.get('Content-Type') || '';
-      const isFile = contentType.includes('application/octet-stream') || contentType.includes('image/') || contentType.includes('application/pdf');
-      const isJson = contentType.includes('application/json');
+      if(response.statusCode >= 300 && response.statusCode < 400){
+        console.log('Redirección detectada:', response.status);
+        const location = response.headers.get('Location');
+        if (location) {
+          window.location.href = location;
+          return;
+        } else {
+          console.warn('Respuesta de redirección sin encabezado Location.');
+        }
+      }
       
       if (isJson) {
-        return response.json();
+        return await response.json();
       } else if (isFile) {
         const blob = await response.blob();
         return blob;
@@ -96,6 +113,9 @@ class FetchService {
     } catch (error) {
       clearTimeout(timeoutId);
       console.error('FetchService Error:', error.message);
+      if(this.errorfunction){
+        this.handleError(error, this.form);
+      }
       if (error.name === 'AbortError') {
         throw new FetchServiceError('Request timed out', null, 'The request exceeded the timeout limit');
       }
@@ -197,5 +217,30 @@ class FetchService {
 
   removeAuthToken() {
     this.removeHeader('Authorization');
+  }
+
+  setErrorFunction(errorfunction) {
+    if(typeof errorfunction != 'function') {
+      throw new FunctionExpectedError(errorfunction);
+    }
+    return this.errorfunction = errorfunction;
+  }
+
+  handleError(...params){
+    if(!this.errorfunction) {
+      console.warn('No error function is set.');
+      return;
+    }
+    return this.errorfunction(...params);
+  }
+
+  /**
+   * Por si en su manejador de errores personalizado quiere manejar errores atravez del formulario.
+   * @param {HTMLFormElement} form
+   */
+  setForm (form){
+    if(form instanceof HTMLFormElement){
+      this.form = form;
+    }
   }
 }

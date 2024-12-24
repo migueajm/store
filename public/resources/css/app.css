@@ -1,0 +1,19 @@
+.btn-primary {
+	background-color: #c7c4b1; color: #000;
+	border-color: #c7c4b1;
+}
+
+.btn-primary:hover {
+	background-color: #9d9a87;
+	border-color: #9d9a87;
+}
+
+.btn-primary:focus {
+	background-color: #9d9a87;
+	border-color: #9d9a87;
+}
+
+button.form-symfony {
+	position: relative;
+	top: 1rem
+} 
