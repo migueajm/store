@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -35,6 +37,14 @@ class Product
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
+
+    #[ORM\OneToMany(mappedBy: "product", targetEntity: InventoryMovement::class, cascade: ["persist", "remove"])]
+    private Collection $inventoryMovements;
+
+    public function __construct()
+    {
+        $this->inventoryMovements = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -115,6 +125,33 @@ class Product
     public function setCategory(?Category $category): self
     {
         $this->category = $category;
+        return $this;
+    }
+
+    /**
+     * @return Collection|InventoryMovement[]
+     */
+    public function getInventoryMovements(): Collection
+    {
+        return $this->inventoryMovements;
+    }
+
+    public function addInventoryMovement(InventoryMovement $inventoryMovement): self
+    {
+        if (!$this->inventoryMovements->contains($inventoryMovement)) {
+            $this->inventoryMovements[] = $inventoryMovement;
+            $inventoryMovement->setProduct($this);
+        }
+        return $this;
+    }
+
+    public function removeInventoryMovement(InventoryMovement $inventoryMovement): self
+    {
+        if ($this->inventoryMovements->removeElement($inventoryMovement)) {
+            if ($inventoryMovement->getProduct() === $this) {
+                $inventoryMovement->setProduct(null);
+            }
+        }
         return $this;
     }
 }
