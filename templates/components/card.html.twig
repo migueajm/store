@@ -1,4 +1,4 @@
-<div class="card {{card.class ?? ''}}">
+<div class="card {{card.class ?? ''}} bg-light">
 	{% if card.header is defined %}
 		<div class="card-header {{card.header.class ?? ''}}">
 			<h5 class="card-title">{{(card.header.title ?? 'Card title')|raw}}</h5>

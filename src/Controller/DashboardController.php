@@ -12,13 +12,24 @@ class DashboardController extends DashboardService
     #[Route('/index', name: '_index')]
     public function index(): Response
     {
-        die();
         $this->validateUserControllerAccess(self::class);
         $user = $this->getUser();
         $username = $user->getUserIdentifier();
         $modules = self::MODULES;
-        $miniCard = [];
-        $cards = [];
+        $miniCard = [
+            ['card' => ['body' => 'x1']],
+            ['card' => ['body' => 'x1']],
+            ['card' => ['body' => 'x1']],
+            ['card' => ['body' => 'x1']]
+        ];
+        $cards = [
+            ['card' => ['body' => 'x1']],
+            ['card' => ['body' => 'x1']],
+            ['card' => ['body' => 'x1']],
+            ['card' => ['body' => 'x1']],
+            ['card' => ['body' => 'x1']],
+            ['card' => ['body' => 'x1']],
+        ];
         return $this->render('dashboard/index.html.twig', compact('modules', 'username', 'miniCard', 'cards'));
     }
 }

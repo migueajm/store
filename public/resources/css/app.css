@@ -1,23 +1,5 @@
 :root {
-	--error-color: rgb(225, 19, 19);;
-	--primary-color: #c7c4b1;
-	--primary-color-hover: #9d9a87;
-}
-
-.btn-primary {
-	background-color: var(--primary-color);
-	color: #000;
-	border-color: var(--primary-color);
-}
-
-.btn-primary:hover {
-	background-color: var(--primary-color-hover);
-	border-color: var(--primary-color-hover);
-}
-
-.btn-primary:focus {
-	background-color: var(--primary-color-hover);
-	border-color: var(--primary-color-hover);
+	--error-color: rgb(225, 19, 19);
 }
 
 .error-message {
@@ -38,5 +20,5 @@
 
 button.form-symfony {
 	position: relative;
-	top: 1rem
+	top: 0.75rem
 } 

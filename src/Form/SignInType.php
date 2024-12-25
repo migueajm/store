@@ -29,7 +29,7 @@ class SignInType extends AbstractType
             ])
             ->add('btn-sign-in', SubmitType::class, [
                 'label' => 'Iniciar sesión',
-                'attr' => ['class' => "btn btn-primary form-symfony"],
+                'attr' => ['class' => "btn btn-success form-symfony"],
             ]);
     }
 

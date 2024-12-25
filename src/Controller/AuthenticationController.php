@@ -17,7 +17,7 @@ class AuthenticationController extends AuthenticationService
 	#[Route('', name: '_main', methods:['GET'])]
 	public function index(): Response
 	{
-		return new Response('main');
+		return $this->render('security/index.html.twig');
 	}
 
 	#[Route('sign-in', name: '_sign_in', methods:['GET', 'POST'])]
