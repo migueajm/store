@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use App\Service\AuthenticationService;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -40,6 +42,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     private ?string $token = null;
+
+    #[ORM\OneToMany(mappedBy: "user", targetEntity: Sale::class, cascade: ["persist", "remove"])]
+    private Collection $sale;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $created_at = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $updated_at = null;
+
+    public function __construct()
+    {
+        $this->sale =  new ArrayCollection();
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    {
+        $this->created_at = $created_at;
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updated_at;
+    }
 
     public function getId(): ?int
     {
@@ -147,6 +179,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $controller = ['DashboardController', 'ProductController', 'SalesController', 'StocktakingController', 'ReportController'];
         }
         return $controller;
+    }
+
+     /**
+     * @return Collection|Venta[]
+     */
+    public function getVentas(): Collection
+    {
+        return $this->sale;
+    }
+
+    public function addVenta(Sale $sale): self
+    {
+        if (!$this->sale->contains($sale)) {
+            $this->sale[] = $sale;
+            $sale->getUser($this);
+        }
+        return $this;
+    }
+
+    public function removeVenta(Sale $sale): self
+    {
+        if ($this->sale->removeElement($sale)) {
+            if ($sale->getUser() === $this) {
+                $sale->getUser(null);
+            }
+        }
+        return $this;
     }
 
     /**
