@@ -1,0 +1,15 @@
+<div class="card {{card.class ?? ''}}">
+	{% if card.header is defined %}
+		<div class="card-header {{card.header.class ?? ''}}">
+			<h5 class="card-title">{{(card.header.title ?? 'Card title')|raw}}</h5>
+		</div>
+	{% endif %}
+	<div class="card-body {{card.body.class ?? ''}}">	
+		{{(card.body.body ?? card.body ?? 'Card body')|raw}}
+	</div>
+	{% if card.footer is defined %}
+		<div class="card-footer">
+			{{card.footer|raw}}
+		</div>
+	{% endif %}
+</div>

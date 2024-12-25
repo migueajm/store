@@ -15,11 +15,13 @@ class ErrorApiException extends Exception
 
 	private Throwable $exception;
 	private Request $request;
-	public function __construct(Throwable $exception, Request $request)
+	private int $httpCode;
+	public function __construct(Throwable $exception, Request $request, int $code)
 	{
 		parent::__construct($exception->getMessage(), $exception->getCode());
 		$this->setExeption($exception)
 			->setRequest($request);
+		$this->httpCode = $code;
 	}
 
 	public function __toString(): string
@@ -31,11 +33,11 @@ class ErrorApiException extends Exception
 	{
 		$className = self::getClassName($this->exception);
 		$message = $this->exception->getMessage();
-		$code = $this->exception->getCode();
+		$code = $this->httpCode;
 		$request = $this->request;
 		$error = new Error();
 		$error->setCode($code)
-			->setError($message	)
+			->setError($message)
 			->setRequest(new RequestError(
 				$request->getMethod(),
 				$request->getUri(),
@@ -44,6 +46,9 @@ class ErrorApiException extends Exception
 				$request->query->all()
 			))
 			->setException($className);
+		if($this->exception instanceof FormException){
+			$error->setFormError($this->exception->getFormErrors());
+		}
 		return $error;
 	}
 

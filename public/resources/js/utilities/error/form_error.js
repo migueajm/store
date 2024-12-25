@@ -2,12 +2,14 @@ export class FormError extends Error {
 	/**
 	 * Crea un error personalizado para formularios.
 	 * 
-	 * @param {string} fieldName - El nombre del campo que tiene el error.
+	 * @param {object} formError - El nombre del campo que tiene el error.
 	 * @param {string} message - El mensaje de error a mostrar.
 	 */
-	constructor(fieldName, message) {
+	constructor(formError, message, statusCode = 400, statusText = 'Bad request.') {
 			super(message);
 			this.name = 'FormError';
-			this.fieldName = fieldName;
+			this.formError = formError;
+			this.statusCode = statusCode;
+			this.statusText = statusText;
 	}
 }

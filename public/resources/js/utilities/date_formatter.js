@@ -1,6 +1,5 @@
 export class DateFormatter {
-  constructor(locale = 'en-US', date = new Date()) {
-    this.date = date;
+  constructor(locale = 'en-US') {
 		this.locale = locale;
 		this.options = {
 			date: { day: '2-digit', month: '2-digit', year: 'numeric' },
@@ -8,12 +7,12 @@ export class DateFormatter {
 		};
   }
 
-  getHour() {
-    return this.date.toLocaleTimeString(this.locale, this.options.hour);
+  getHour(date = new Date()) {
+    return date.toLocaleTimeString(this.locale, this.options.hour);
   }
 
-  getDate() {
-    return this.date.toLocaleDateString(this.locale, this.options.date);
+  getDate(date = new Date()) {
+    return date.toLocaleDateString(this.locale, this.options.date);
   }
 
   getFullDate(locale = 'en-US') {

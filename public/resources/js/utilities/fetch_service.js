@@ -1,4 +1,6 @@
+import { toast } from "../app.js";
 import { FetchServiceError } from "./error/fetch_service_error.js";
+import { FormError } from "./error/form_error.js";
 import { FunctionExpectedError } from "./error/function_expected_error.js";
 
 /**
@@ -77,11 +79,13 @@ export class FetchService {
       const isJson = contentType.includes('application/json');
       if (!response.ok) {
         let message = response.statusText;
-        let text = null;
         if(response.status < 500){
           if(isJson) {
             const json = await response.json();
             message = json?.message ?? json?.error ?? response.statusText;
+            if(json?.exception === 'FormException'){
+              throw new FormError(json.formError, message);
+            }
           }
         }
         throw new FetchServiceError(
@@ -91,14 +95,19 @@ export class FetchService {
         );
       }
 
-      if(response.statusCode >= 300 && response.statusCode < 400){
-        console.log('Redirección detectada:', response.status);
+      if((response.statusCode >= 300 && response.statusCode < 400) || response.redirected){
+        console.log('Redirect detected:', response.status);
+        if(response?.url){
+          toast.success("Redirect");
+          window.location.href = response.url;
+          return;
+        }
         const location = response.headers.get('Location');
         if (location) {
           window.location.href = location;
           return;
         } else {
-          console.warn('Respuesta de redirección sin encabezado Location.');
+          console.warn('Redirect response without Location header.');
         }
       }
       

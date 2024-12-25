@@ -30,19 +30,17 @@ export class FormErrorManager {
 	 * @param {string} errorMessage - El mensaje de error a mostrar.
 	 */
 	showError(fieldName, errorMessage) {
-		const field = this.form.querySelector(`[name="${fieldName}"]`);
+		const symfonyName = `${this.form.name}[${fieldName}]`;
+		const field = this.form.querySelector(`[name="${fieldName}"]`) ?? this.form.querySelector(`[name="${symfonyName}"]`);
 		if (!field) {
 			throw new FormError(fieldName, `The field with the name "${fieldName}" was not found.`);
 		}
-		this.clearError(fieldName);
+		this.clearError(field.name);
 		const errorElement = document.createElement('div');
 		errorElement.className = 'error-message';
 		errorElement.textContent = errorMessage;
-		errorElement.style.color = 'red';
-		errorElement.style.fontSize = '0.9em';
-		errorElement.style.marginTop = '5px';
 		field.parentNode.appendChild(errorElement);
-		field.style.borderColor = 'red';
+		field.classList.add('error-input');
 	}
 
 	/**
@@ -57,7 +55,7 @@ export class FormErrorManager {
 		if (errorElement) {
 			errorElement.remove();
 		}
-		field.style.borderColor = '';
+		field.classList.remove('error-input');
 	}
 
 	/**
@@ -68,7 +66,7 @@ export class FormErrorManager {
 		errorMessages.forEach((errorElement) => errorElement.remove());
 		const fields = this.form.querySelectorAll('input, select, textarea');
 		fields.forEach((field) => {
-			field.style.borderColor = '';
+			field.classList.remove('error-input');
 		});
 	}
 }

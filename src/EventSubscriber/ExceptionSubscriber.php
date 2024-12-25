@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Environment;
 
@@ -37,30 +38,37 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $exception = $event->getThrowable();
         $response = new Response();
         $code = $exception->getCode();
+        if($exception instanceof HttpExceptionInterface){
+            $code = $exception->getStatusCode();
+        }
         if($code < 100 || $code >= 600) $code = 500;
         $response->setStatusCode($code);
-        $errorApi = new ErrorApiException($exception, $currentRequest);
+        $errorApi = new ErrorApiException($exception, $currentRequest, $code);
         $data = $errorApi->getError()->toArray();
-        if($this->isProduction) unset($data['request']);
         if($code >= 500 && $this->isProduction) {
             $this->logger->error('Exception caught by ExceptionListener', compact('exception'));
         }
-        $content = $this->twig->render('exception.html.twig', array_merge(
-            $data,
-            [
-                'isDev' => !$this->isProduction,
-                'file' => $exception->getFile() . "Line: " . $exception->getLine(),
-                'url' => $currentRequest->headers->get('referer', $this->router->generate('app_main'))
-            ]
-        ));
+        $errorDetail = [
+            'isDev' => !$this->isProduction,
+            'file' => $exception->getFile() . "Line: " . $exception->getLine()
+        ];
+        $url = $currentRequest->headers->get('referer', $this->router->generate('app_authentication_main'));
+        $data = array_merge($data, compact('url', 'errorDetail'));
+        $content = $this->twig->render('exception/exception.html.twig', $data);
         $response->setContent($content);
-        if($this->isApiException($currentRequest)) $response = new JsonResponse($data, $code);
+        $response->setStatusCode($data['code']);
+        if($this->isProduction) {
+            unset($data['request']);
+            unset($data['errorDetail']);
+            unset($data['url']);
+        };
+        if($this->isApiOrFetchRequestException($currentRequest)) $response = new JsonResponse($data, $code);
         $event->setResponse($response);
     }
 
-    private function isApiException(Request $request)
+    private function isApiOrFetchRequestException(Request $request)
     {
-        return str_starts_with($request->getPathInfo(), '/api');
+        return str_starts_with($request->getPathInfo(), '/api') || $request->isXmlHttpRequest();
     }
 
     public static function getSubscribedEvents(): array

@@ -1,0 +1,21 @@
+{% extends "base.html.twig" %}
+{% block title %}SignIn{% endblock %}
+{% block stylesheets %}{% endblock %}
+{% block javascripts %}
+{% endblock %}
+{% block body %}
+	{% set bodyCard = '
+	<h5 class="card-title text-center">Bienvenido</h5>
+	<hr>
+	<div class="row">
+		<div class="col-sm-12 col-md-6 d-flex justify-content-center"><img src="' ~ asset('resources/image/favicon.png') ~ '" width="200"></div>
+		<div class="col-sm-12 col-md-6">' ~ form(signInForm) ~ '</div>
+	</div>'
+	%}
+	<div class="container d-flex justify-content-center align-items-center vh-100">
+		{% set card = {
+			body: bodyCard
+		} %}
+		{% include "components/card.html.twig" %}
+	</div>
+{% endblock %}

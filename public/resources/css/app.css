@@ -1,16 +1,39 @@
+:root {
+	--error-color: rgb(225, 19, 19);;
+	--primary-color: #c7c4b1;
+	--primary-color-hover: #9d9a87;
+}
+
 .btn-primary {
-	background-color: #c7c4b1; color: #000;
-	border-color: #c7c4b1;
+	background-color: var(--primary-color);
+	color: #000;
+	border-color: var(--primary-color);
 }
 
 .btn-primary:hover {
-	background-color: #9d9a87;
-	border-color: #9d9a87;
+	background-color: var(--primary-color-hover);
+	border-color: var(--primary-color-hover);
 }
 
 .btn-primary:focus {
-	background-color: #9d9a87;
-	border-color: #9d9a87;
+	background-color: var(--primary-color-hover);
+	border-color: var(--primary-color-hover);
+}
+
+.error-message {
+	color: var(--error-color);
+	font-size: 0.75rem;
+	margin-top: 5px;
+	position: absolute;
+	top: 3.95rem;
+}
+
+.error-input {
+	border-color: var(--error-color);
+}
+
+.form-control {
+	margin-bottom: 0.5rem;
 }
 
 button.form-symfony {

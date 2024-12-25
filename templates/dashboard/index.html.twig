@@ -1,20 +1,43 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello DashboardController!{% endblock %}
+{% block title %}Dashboard{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/migueajm/www/mstore/src/Controller/DashboardController.php</code></li>
-        <li>Your template at <code>/Users/migueajm/www/mstore/templates/dashboard/index.html.twig</code></li>
-    </ul>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 sidebar bg-dark text-light p-3">
+            <div class="d-flex align-items-center mb-4">
+                <img src="{{ asset('resources/image/favicon.png') }}" alt="migueajm store" class="img-fluid rounded-circle" style="width: 50px; height: 50px;">
+                <h4 class="text-white ms-2">{{username ?? 'Dashboard'}}</h4>
+            </div>
+            <nav class="nav flex-column">
+                {% for module in modules %}
+                    {% set path = null %}
+                    {% if module.path is defined %}
+                        {% set path = path(module.path) %}
+                    {% endif %}
+                    <a href="{{path ? path : '#' ~ module.name}}" class="nav-link text-secondary">{{module.name}}</a>
+                {% endfor %}
+            </nav>
+        </div>
+        <div class="col-md-10 p-4">
+            <h2>{{title ?? 'Dashboard'}}</h2>
+            <p>{{description ?? 'description'}}</p>
+            <div class="row g-3">
+                {% for card in miniCard %}
+                    <div class="col-md-3">
+                        {% include "components/card.html.twig" %}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="row mt-4">
+                {% for card in cards %}
+                    <div class="col-md-6">
+                        {% include "components/card.html.twig" %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

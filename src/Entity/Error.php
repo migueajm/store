@@ -11,6 +11,7 @@ class Error
     private ?int $code = null;
     private ?RequestError $request = null;
     private ?string $statusText = null;
+    private ?array $formError = null;
 
     public function getException(): ?string
     {
@@ -64,6 +65,17 @@ class Error
     public function setStatusText(int $code): static
     {
         $this->statusText = Response::$statusTexts[$code] ?? Response::$statusTexts[500];
+        return $this;
+    }
+
+    public function getFormError(): ?array
+    {
+        return $this->formError;
+    }
+
+    public function setFormError(array $formError): static
+    {
+        $this->formError = $formError;
         return $this;
     }
 

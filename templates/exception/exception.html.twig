@@ -1,0 +1,17 @@
+{% extends "base.html.twig" %}
+{% block title %}{{code ~ ': ' ~ statusText}}{% endblock %}
+{% block stylesheets %}
+<link rel="stylesheet" href="{{asset('resources/css/exception.css')}}">
+{% endblock %}
+{% block javascripts %}{% endblock %}
+{% block body %}
+	<div>
+		<h1>{{code}}</h1>
+		<h2>{{statusText}}</h2>
+		{% if errorDetail.isDev is defined and errorDetail.isDev %}
+			<h3>{{exception}}</h3>
+			<p>{{error}}<br>{{errorDetail.file}}</p>
+		{% endif %}
+		<a class="btn" href="{{url}}">Regresar</a>
+	</div>
+{% endblock %}

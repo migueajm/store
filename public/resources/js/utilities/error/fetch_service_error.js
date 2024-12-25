@@ -6,4 +6,6 @@ export class FetchServiceError extends Error {
     this.statusText = statusText;
     this.stack = (new Error()).stack;
   }
+
+  setFormE
 }
