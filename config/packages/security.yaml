@@ -20,7 +20,7 @@ security:
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/app, roles: ROLE_USER }
-        - { path: ^/sign-out, roles: [ROLE_USER, ROLE_ADMIN] }
+        - { path: /sign-out, roles: [ROLE_USER, ROLE_ADMIN] }
         - { path: /sign-in, roles: PUBLIC_ACCESS }
         - { path: /, roles: PUBLIC_ACCESS }
 
