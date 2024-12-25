@@ -1,43 +1,20 @@
-{% extends 'base.html.twig' %}
+{% extends "dashboard/base.html.twig" %}
 
-{% block title %}Dashboard{% endblock %}
-
-{% block body %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-2 sidebar bg-dark text-light p-3">
-            <div class="d-flex align-items-center mb-4">
-                <img src="{{ asset('resources/image/favicon.png') }}" alt="migueajm store" class="img-fluid rounded-circle" style="width: 50px; height: 50px;">
-                <h4 class="text-white ms-2">{{username ?? 'Dashboard'}}</h4>
-            </div>
-            <nav class="nav flex-column">
-                {% for module in modules %}
-                    {% set path = null %}
-                    {% if module.path is defined %}
-                        {% set path = path(module.path) %}
-                    {% endif %}
-                    <a href="{{path ? path : '#' ~ module.name}}" class="nav-link text-secondary">{{module.name}}</a>
-                {% endfor %}
-            </nav>
-        </div>
-        <div class="col-md-10 p-4">
-            <h2>{{title ?? 'Dashboard'}}</h2>
-            <p>{{description ?? 'description'}}</p>
-            <div class="row g-3">
-                {% for card in miniCard %}
-                    <div class="col-md-3">
-                        {% include "components/card.html.twig" %}
-                    </div>
-                {% endfor %}
-            </div>
-            <div class="row mt-4">
-                {% for card in cards %}
-                    <div class="col-md-6">
-                        {% include "components/card.html.twig" %}
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-</div>
+{% block dashboardBody %}
+	<h2>{{title ?? 'Dashboard'}}</h2>
+	<p>{{description ?? 'description'}}</p>
+	<div class="row g-3">
+			{% for card in miniCard %}
+					<div class="col-md-3">
+							{% include "components/card.html.twig" %}
+					</div>
+			{% endfor %}
+	</div>
+	<div class="row mt-4">
+			{% for card in cards %}
+					<div class="col-md-6">
+							{% include "components/card.html.twig" %}
+					</div>
+			{% endfor %}
+	</div>
 {% endblock %}

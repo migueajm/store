@@ -1,0 +1,51 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Carrito de Compras{% endblock %}
+
+{% block dashboardBody %}
+    <h2>Carrito de Compras</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart.items ?? [] %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.product.price|number_format(2, '.', ',') }}</td>
+                        <td>
+                            <form method="post" action="{{ path('cart_update', {id: item.id}) }}" class="d-inline">
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control form-control-sm d-inline-block" style="width: 60px;">
+                                <button type="submit" class="btn btn-sm btn-primary">Actualizar</button>
+                            </form>
+                        </td>
+                        <td>{{ (item.product.price * item.quantity)|number_format(2, '.', ',') }}</td>
+                        <td>
+                            <a href="{{ path('cart_remove', {id: item.id}) }}" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar este producto del carrito?');">Eliminar</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">Tu carrito está vacío.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% if cart.items|length > 0 %}
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <h4>Total: {{ cart.total|number_format(2, '.', ',') }}</h4>
+            <a href="{{ path('checkout') }}" class="btn btn-success">Proceder al Pago</a>
+        </div>
+    {% endif %}
+{% endblock %}

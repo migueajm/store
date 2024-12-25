@@ -1,5 +1,6 @@
 :root {
 	--error-color: rgb(225, 19, 19);
+	--active-color: #20c997
 }
 
 .error-message {
@@ -16,6 +17,13 @@
 
 .form-control {
 	margin-bottom: 0.5rem;
+}
+
+.nav-link.active {
+	color: #fff !important;
+	background-color: var(--active-color);
+	font-weight: bold;
+	border-radius: 4px;
 }
 
 button.form-symfony {

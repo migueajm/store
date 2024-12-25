@@ -172,16 +172,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getControllers(): array
+    public function getModules(): array
     {
-        $controller = ['SalesController', 'StocktakingController'];
-        if(in_array(AuthenticationService::ROLE_ADMIN, $this->roles)){
-            $controller = ['DashboardController', 'ProductController', 'SalesController', 'StocktakingController', 'ReportController'];
+        $modules = [
+            ['name' => 'Ventas', 'path' => 'app_sales_index', 'class' => 'SalesController'],
+            ['name' => 'Inventario', 'path' => 'app_stocktaking_index', 'class' => 'StocktakingController'],
+            ['name' => 'Reportes', 'path' => 'app_report_index', 'class' => 'ReportController'],
+            ['name' => 'Cerrar sesión', 'path' => 'app_authentication_sign_out', 'class' => 'AuthenticationController']
+        ];
+        if (in_array(AuthenticationService::ROLE_ADMIN, $this->roles)) {
+            $admin = [
+                ['name' => 'Dashboard', 'path' => 'app_dashboard_index', 'class' => 'DashboardController'],
+                ['name' => 'Productos', 'path' => 'app_product_index', 'class' => 'ProductController'],
+                ['name' => 'Usuarios', 'path' => 'app_user_index', 'class' => 'UserController']
+            ];
+            $modules = array_merge($admin, $modules);
         }
-        return $controller;
+        return $modules;
     }
 
-     /**
+    /**
      * @return Collection|Venta[]
      */
     public function getVentas(): Collection
@@ -211,6 +221,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @see UserInterface
      */
-    public function eraseCredentials(): void
-    {}
+    public function eraseCredentials(): void {}
 }

@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+{% set user = app.session.get('user') ?? {username: 'Dashboard', modules: []} %}
+<div class="container-fluid vh-100">
+    <div class="row h-100">
+        <div class="col-md-2 sidebar bg-dark text-light p-3 d-flex flex-column">
+            <div class="d-flex align-items-center mb-4">
+                {% set icon = {style: "width: 50px; height: 50px;"} %}
+                {% include "components/icon.html.twig" %}
+                <h4 class="text-white ms-2">{{ user.username }}</h4>    
+            </div>
+            <nav class="nav flex-column flex-grow-1">
+                {% for module in user.modules %}
+                    {% set path = null %}
+                    {% if module.path is defined %}
+                        {% set path = path(module.path) %}
+                    {% endif %}
+                    {% set active = app.request.attributes.get('_route') == module.path ? 'active' : '' %}
+                    <a href="{{ path ? path : '#' ~ module.name }}" class="nav-link text-secondary {{active}}">{{ module.name }}</a>
+                {% endfor %}
+            </nav>
+        </div>
+        <div class="col-md-10 p-4">
+            {% block dashboardBody %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}

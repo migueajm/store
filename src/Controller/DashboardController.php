@@ -13,9 +13,6 @@ class DashboardController extends DashboardService
     public function index(): Response
     {
         $this->validateUserControllerAccess(self::class);
-        $user = $this->getUser();
-        $username = $user->getUserIdentifier();
-        $modules = self::MODULES;
         $miniCard = [
             ['card' => ['body' => 'x1']],
             ['card' => ['body' => 'x1']],
@@ -30,6 +27,6 @@ class DashboardController extends DashboardService
             ['card' => ['body' => 'x1']],
             ['card' => ['body' => 'x1']],
         ];
-        return $this->render('dashboard/index.html.twig', compact('modules', 'username', 'miniCard', 'cards'));
+        return $this->render('dashboard/index.html.twig', compact('miniCard', 'cards'));
     }
 }
