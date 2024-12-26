@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\CategoryRepository;
-use App\Service\AbstractService;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
