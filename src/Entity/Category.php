@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CategoryRepository;
+use App\Service\AbstractService;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
@@ -18,17 +19,17 @@ class Category
 
     #[Assert\NotBlank]
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    public ?string $name = null;
 
     #[Assert\NotBlank]
     #[ORM\Column(length: 255)]
-    private ?string $description = null;
+    public ?string $description = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $updated_at = null;
+    public ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\OneToMany(mappedBy: "category", targetEntity: Product::class, cascade: ["persist", "remove"])]
     private Collection $products;
@@ -115,5 +116,12 @@ class Category
             }
         }
         return $this;
+    }
+
+    public function getData(): array
+    {
+        $category = get_object_vars($this);
+        unset($category['products']);
+        return $category;
     }
 }

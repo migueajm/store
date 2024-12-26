@@ -3,13 +3,8 @@
 namespace App\Service;
 
 use App\Entity\Category;
-use App\Exception\FormException;
-use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class CategoryService extends AbstractService
@@ -33,26 +28,14 @@ class CategoryService extends AbstractService
 
 	public function all(): array
 	{
-		return ['data' => $this->categoryRepository->findAll()];
+    return $this->handleDataToJsonResponse($this->categoryRepository->findAll());
 	}
 
-	public function save(ValidatorInterface $validatorInterface,?Category $category = null): void
+	public function save(ValidatorInterface $validatorInterface, string $type, ?Category $category = null): void
 	{
 		$this->isAdmin();
-		$entity = $this->handleFormValidation($validatorInterface, CategoryType::class);
-		$code = Response::HTTP_CREATED;
-		if($this->getRequest()->getMethod() === Request::METHOD_PUT){
-			if(!$category){
-				throw new FormException("No se definio el identificar de la categoria.");
-			}
-			$category->setName($entity->getName());
-			$category->setDescription($entity->getDescription());
-			$category->setUpdatedAt(new DateTimeImmutable());
-			$entity = $category;
-			$code = Response::HTTP_OK;
-		}
+		$entity = $this->populateEntity($validatorInterface, $type, $category);
 		$this->saveEntity($this->entityManagerInterface, $entity);
-		$this->setCode($code);
 	}
 	
 	public function delete(Category $category): void

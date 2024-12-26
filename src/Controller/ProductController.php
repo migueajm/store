@@ -2,21 +2,24 @@
 
 namespace App\Controller;
 
+use App\Entity\Category;
 use App\Entity\Product;
 use App\Form\ProductType;
-use App\Repository\ProductRepository;
 use App\Service\ProductService;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/admin/product', name: 'app_product')]
 class ProductController extends ProductService
 {
-    public function __construct(ProductRepository $productRepository)
+    public function __construct(EntityManagerInterface $entityManagerInterface)
     {
-        parent::__construct($productRepository);
+        parent::__construct($entityManagerInterface);
     }
 
     #[Route('/index', name: '_index', methods:['GET'])]
@@ -38,13 +41,16 @@ class ProductController extends ProductService
     }
 
     #[Route('/save/{id?}', name: '_save', methods:['POST', 'PUT', 'DELETE'])]
-    public function saveAction(Product $product = null): JsonResponse
+    public function saveAction(ValidatorInterface $validatorInterface, ?Product $product = null): JsonResponse
     {
         if($this->getRequest()->getMethod() === Request::METHOD_DELETE){
+            if(!$product instanceof Product){
+                throw new BadRequestException("Undefined product.", 400);
+            }
             $this->delete($product);
         }else{
-            $this->save();
+            $this->save($validatorInterface, ProductType::class, $product);
         }
-        return $this->json($this->getResponse(), $this->getCode());
+        return $this->json($this->getRes(), $this->getCode());
     }
 }

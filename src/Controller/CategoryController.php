@@ -48,7 +48,7 @@ class CategoryController extends CategoryService
             }
             $this->delete($category);
         }else{
-            $this->save($validatorInterface, $category);
+            $this->save($validatorInterface, CategoryType::class, $category);
         }
         return $this->json($this->getRes(), $this->getCode());
     }

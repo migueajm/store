@@ -26,8 +26,7 @@ const actionColumn = {
 
 const dateColumn = {
 	createdAt: {
-		data: 'createdAt',
-		title: 'created',
+		data: 'created_at',
 		render: function (data, type, row) {
 			if (type === 'display' || type === 'filter') {
 				return getDate(data, true)
@@ -36,8 +35,7 @@ const dateColumn = {
 		},
 	},
 	updatedAt: {
-		data: 'updatedAt',
-		title: 'Last Updated',
+		data: 'updated_at',
 		render: function (data, type, row) {
 			if (type === 'display' || type === 'filter') {
 				return getDate(data, true)

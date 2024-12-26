@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Exception\FormException;
 use App\Exception\UnauthorizedException;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,6 +17,7 @@ class AbstractService extends AbstractController
 {
 	private $res = null;
 	private ?int $code;
+	const FORMAT_DATE = 'Y-m-dTH:i:s';
 
 	public function getSession(): SessionInterface
 	{
@@ -129,15 +131,15 @@ class AbstractService extends AbstractController
 		return $this;
 	}
 
-	public function saveEntity(EntityManagerInterface $entityManaegerInterface , $entity, bool $isUpdate = false): void
+	public function saveEntity(EntityManagerInterface $entityManaegerInterface, $entity, bool $isUpdate = false): void
 	{
-		if(!$isUpdate){
+		if (!$isUpdate) {
 			$entityManaegerInterface->persist($entity);
 		}
 		$entityManaegerInterface->flush($entity);
 	}
 
-	public function removeEntity(EntityManagerInterface $entityManaegerInterface , $entity): void
+	public function removeEntity(EntityManagerInterface $entityManaegerInterface, $entity): void
 	{
 		$entityManaegerInterface->remove($entity);
 		$entityManaegerInterface->flush($entity);
@@ -148,27 +150,82 @@ class AbstractService extends AbstractController
 		$request = $this->getRequest();
 		$form = $this->createForm($type);
 		$entity = $form->handleRequest($request)->getData();
+		if ($entity === null) {
+			$payload = json_decode($request->getContent(), true);
+			$now = new DateTimeImmutable();
+			if(isset($payload['created_at']) && !$payload['created_at']){
+				$payload['created_at'] = $now->format(self::FORMAT_DATE);
+			}
+			if(isset($payload['updated_at']) && !$payload['updated_at']){
+				$payload['updated_at'] = $now->format(self::FORMAT_DATE);
+			}
+			$form->submit($payload);
+			$entity = $form->handleRequest($request)->getData();
 			if ($entity === null) {
-				$payload = json_decode($request->getContent(), true);
-				$form->submit($payload);
-				$entity = $form->handleRequest($request)->getData();
-				if($entity === null){
-					throw new \RuntimeException('The form did not return a valid entity.');
-				}
-				if(isset($payload['id']) && $payload['id']){
-					$entity->setId($payload['id']);
-				}
+				throw new \RuntimeException('The form did not return a valid entity.');
+			}
+			if (isset($payload['id']) && $payload['id']) {
+				$entity->setId($payload['id']);
+			}
 		}
 		$this->handleFormError($validator, $entity);
 		return $entity;
 	}
 
+	/**
+	 * Si no es un usario admin, se genera una exception de la clase UnauthorizedException.
+	 * @throws UnauthorizedException
+	 */
 	public function isAdmin(): void
 	{
 		$method = 'isAdmin';
-		if(!$this->getUser()->$method()){
+		if (!$this->getUser()->$method()) {
 			throw new UnauthorizedException("No tiene autorización");
 		}
+	}
+
+	/**
+	 * Se encarga de procesar la entidad para poblarla de los datos obtenidos del payload.
+	 * @throws FormException The entity identifier was not defined.
+	 */
+	public function populateEntity(ValidatorInterface $validatorInterface, string $type, $oldEntity = null): object
+	{
+		$entity = $this->handleFormValidation($validatorInterface, $type);
+		$code = Response::HTTP_CREATED;
+		if ($this->getRequest()->getMethod() === Request::METHOD_PUT) {
+			if (!$oldEntity) {
+				throw new FormException("The entity identifier was not defined.");
+			}
+			$publicKeys = get_object_vars($oldEntity);
+			foreach ($publicKeys as $key => $value) {
+				$key = self::convertToCamelCase($key);
+				$setMethod = "set$key";
+				$getMethod = "get$key";
+				$isDate = "updatedat" === strtolower($key);
+				$value = $isDate ? new DateTimeImmutable() : $entity->$getMethod();
+				$oldEntity->$setMethod($value);
+			}
+			$entity = $oldEntity;
+			$code = Response::HTTP_OK;
+		}
+		$code = Response::HTTP_OK;
+		$this->setCode($code);
+		return $entity;
+	}
+
+	public function handleDataToJsonResponse(array $entities)
+	{
+		return ['data' => array_map(function ($entity) {
+			return $entity->getData();
+		}, $entities)];
+	}
+
+	static function convertToCamelCase($string)
+	{
+		$result = str_replace('_', ' ', $string);
+		$result = ucwords($result);
+		$result = str_replace(' ', '', $result);
+		return ucfirst($result);
 	}
 
 	/**

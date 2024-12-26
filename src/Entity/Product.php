@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use App\Service\AbstractService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -17,26 +18,29 @@ class Product
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    public ?string $name = null;
+
+    #[ORM\Column(length: 255)]
+    public ?string $code = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $description = null;
+    public ?string $description = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $price = null;
+    public ?string $price = null;
 
     #[ORM\Column]
-    private ?int $stock_quantity = null;
+    public ?int $stock_quantity = null;
 
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: "products")]
     #[ORM\JoinColumn(name: "category_id", referencedColumnName: "id", nullable: false)]
-    private ?Category $category = null;
+    public ?Category $category = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $updated_at = null;
+    public ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\OneToMany(mappedBy: "product", targetEntity: InventoryMovement::class, cascade: ["persist", "remove"])]
     private Collection $inventoryMovements;
@@ -51,6 +55,12 @@ class Product
         return $this->id;
     }
 
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+        return $this;
+    }
+
     public function getName(): ?string
     {
         return $this->name;
@@ -59,6 +69,17 @@ class Product
     public function setName(string $name): static
     {
         $this->name = $name;
+        return $this;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setCode(string $code): static
+    {
+        $this->code = $code;
         return $this;
     }
 
@@ -153,5 +174,16 @@ class Product
             }
         }
         return $this;
+    }
+
+    public function getData(): array
+    {
+        $product = get_object_vars($this);
+        $product['category'] = $this->category->getId();
+        $product['category_name'] = $this->category->getName();
+        $product['created_at'] = $this->getCreatedAt()->format(AbstractService::FORMAT_DATE);
+        $product['updated_at'] = $this->getUpdatedAt()->format(AbstractService::FORMAT_DATE);
+        unset($product['inventoryMovements']);
+        return $product;
     }
 }

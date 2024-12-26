@@ -28,6 +28,7 @@ export class FormService {
 	 */
 	static getData(form, asJson = false, isSymfonyForm = true) {
 		const formData = new FormData(form);
+		const formId = form.id;
 		if (!asJson) return formData;
 		const jsonObject = {};
 		formData.forEach((value, key) => {
@@ -40,6 +41,12 @@ export class FormService {
 				}
 				jsonObject[key].push(value);
 			} else {
+				if(!value){
+					const element = document.querySelector(`#${formId}_${key}`);
+					if(element && element.type === 'datetime-local'){
+						value = element.getAttribute('value');
+					}
+				}
 				jsonObject[key] = value;
 			}
 		});

@@ -4,8 +4,8 @@ export const columns = [
 	{data: "id"},
 	{data: "name"},
 	{data: "description"},
-	{data: "category"},
+	{data: "category_name"},
 	{data: "price"},
-	{data: "stock"},
+	{data: "stock_quantity"},
 	actionColumn
 ];

@@ -2,18 +2,19 @@
 
 namespace App\Service;
 
-use App\Exception\UnauthorizedException;
-use App\Form\ProductType;
+use App\Entity\Product;
 use App\Repository\ProductRepository;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProductService extends AbstractService
 {
+	private EntityManagerInterface $entityManagerInterface;
 	private ProductRepository $productRepository;
-	public function __construct(ProductRepository $productRepository)
+	public function __construct(EntityManagerInterface $entityManagerInterface)
 	{
-		$this->productRepository = $productRepository;
+		$this->entityManagerInterface = $entityManagerInterface;
+		$this->productRepository = $entityManagerInterface->getRepository(Product::class);
 	}
 
 	public function getProperties(): array
@@ -27,38 +28,19 @@ class ProductService extends AbstractService
 
 	public function all(): array
 	{
-		return ['data' => $this->productRepository->findAll()];
+    return $this->handleDataToJsonResponse($this->productRepository->findAll());
 	}
 
-	public function save(): void
+	public function save(ValidatorInterface $validatorInterface, string $type, ?Product $category = null): void
 	{
-		$method = 'isAdmin';
-		if(!$this->getUser()->$method()){
-			throw new UnauthorizedException("No tiene autorización");
-		}
-		$entity = $this->handleFormValidation(ProductType::class);
-		$code = Response::HTTP_CREATED;
-		if($this->getRequest()->getMethod() === Request::METHOD_PUT){
-			$code = Response::HTTP_OK;
-		}
-		$this->productRepository->flush($entity);
-		$this->setResponse(null);
-		$this->setCode($code);
+		$this->isAdmin();
+		$entity = $this->populateEntity($validatorInterface, $type, $category);
+		$this->saveEntity($this->entityManagerInterface, $entity);
 	}
 	
-	public function delete(): void
+	public function delete(Product $product): void
 	{
-
+		$this->isAdmin();
+		$this->removeEntity($this->entityManagerInterface, $product);
 	}
-
-	private function create(): void
-	{
-
-	}
-
-	private function update(): void
-	{
-
-	}
-
 }

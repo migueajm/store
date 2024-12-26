@@ -1,6 +1,6 @@
 import { DataTableError } from "./error/datatable_error.js";
 import { language } from "./language_datatable.js";
-import { disbaledElement, fetchService } from "./utilities.js";
+import { disbaledElement, fetchService, toast } from "./utilities.js";
 
 export class DatatableService {
     constructor(
