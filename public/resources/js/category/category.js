@@ -29,15 +29,15 @@ export class Category{
 		this.modal = new bootstrap.Modal(modal);
 	}
 
-	async show({instance, dataset}) {
+	async show({instance, data}) {
 		const form = document.querySelector(`form[name=category]`);
 		form?.reset();
 		form.method = 'post';
 		form.removeAttribute('data-id');
-		if(typeof dataset === 'object' && dataset.hasOwnProperty('id')){
-			form.dataset.id = dataset.id;
+		if(typeof data === 'object' && data.hasOwnProperty('id')){
+			form.dataset.id = data.id;
 			form.method = 'put';
-			FormService.setData(form, dataset);
+			FormService.setData(form, data);
 		}
 		const modal = document.getElementById('modal-form-category');
 		bootstrap.Modal.getInstance(modal).show();
