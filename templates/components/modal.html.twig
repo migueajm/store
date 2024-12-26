@@ -1,0 +1,22 @@
+{# size: {sm, md, lg, xl, fullscreen} #}
+{% if modal is defined %}
+	<div id="{{modal.id ?? 'modal-default'}}" class="modal {{modal.size ? 'modal-' ~ modal.size : ''}}" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">{{modal.title ?? 'Modal title'}}</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					{{(modal.body ?? '')|raw}}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{modal.close ?? 'Cerrar'}}</button>
+					{% if modal.action is defined %}
+						<button id="{{modal.action.id ?? 'btn-modal-action'}}" type="button" class="btn btn-success">{{modal.action.text ?? 'Acción'}}</button>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endif %}

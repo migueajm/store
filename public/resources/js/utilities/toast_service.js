@@ -1,5 +1,6 @@
-import { dateFormatter } from "../app.js";
-export class ToastService {
+import { DateFormatter } from "./date_formatter.js";
+
+class ToastService {
 	color = {
 		success: "#198754",
 		warning: '#ffc107',
@@ -10,6 +11,7 @@ export class ToastService {
     this.toastContainer.id = 'toast-container';
     this.toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
     document.body.appendChild(this.toastContainer);
+    this.formatter = new DateFormatter();
   }
 
   /**
@@ -55,7 +57,7 @@ export class ToastService {
 		<div class="toast-header">
 		<svg class="bd-placeholder-img rounded me-2 bg-${type}" width="20" height="20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="${this.color[type]}"></rect></svg>
 		<strong class="me-auto">${type.toUpperCase()}</strong>
-		<small class="text-muted">${dateFormatter.getHour()}</small>
+		<small class="text-muted">${this.formatter.getHour()}</small>
 		<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
 		</div>
 		<div class="toast-body">
@@ -72,3 +74,5 @@ export class ToastService {
 		setTimeout(() => toast.remove(), delay);
   }
 }
+
+export const toast = new ToastService();

@@ -3,9 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\CategoryRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
-
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 class Category
@@ -15,9 +16,11 @@ class Category
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Assert\NotBlank]
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
@@ -33,6 +36,12 @@ class Category
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getName(): ?string
@@ -62,8 +71,9 @@ class Category
         return $this->created_at;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt($created_at): static
     {
+        if(is_string($created_at)) $created_at = new DateTimeImmutable($created_at);
         $this->created_at = $created_at;
         return $this;
     }
@@ -73,8 +83,9 @@ class Category
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
+    public function setUpdatedAt($updated_at): static
     {
+        if(is_string($updated_at)) $updated_at = new DateTimeImmutable($updated_at);
         $this->updated_at = $updated_at;
         return $this;
     }

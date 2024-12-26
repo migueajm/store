@@ -183,6 +183,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if (in_array(AuthenticationService::ROLE_ADMIN, $this->roles)) {
             $admin = [
                 ['name' => 'Dashboard', 'path' => 'app_dashboard_index', 'class' => 'DashboardController'],
+                ['name' => 'Categorias', 'path' => 'app_category_index', 'class' => 'CategoryController'],
                 ['name' => 'Productos', 'path' => 'app_product_index', 'class' => 'ProductController'],
                 ['name' => 'Usuarios', 'path' => 'app_user_index', 'class' => 'UserController']
             ];

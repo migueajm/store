@@ -1,4 +1,4 @@
-import { toast } from "../app.js";
+import { toast } from "../utilities/utilities.js";
 import { FetchServiceError } from "./error/fetch_service_error.js";
 import { FormError } from "./error/form_error.js";
 import { FunctionExpectedError } from "./error/function_expected_error.js";

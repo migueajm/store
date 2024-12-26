@@ -2,14 +2,21 @@
 
 namespace App\Service;
 
+use App\Exception\FormException;
+use App\Exception\UnauthorizedException;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class AbstractService extends AbstractController
 {
+	private $res = null;
+	private ?int $code;
+
 	public function getSession(): SessionInterface
 	{
 		return $this->getRequest()->getSession();
@@ -85,13 +92,97 @@ class AbstractService extends AbstractController
 			'title' => "Gestión de {$text[1]}",
 			'id' => "btn-$action",
 			'action' => $text[2],
-			'href' => "#{{$action}}"
+			'href' => "#{$action}"
 		];
 		$table = [
+			'id' => $text['3'],
 			'head' => $head,
 			'body' => "No hay {$text[1]} registrados",
 			'count' => count($head)
 		];
 		return compact('title', 'module', 'table');
+	}
+
+	/**
+	 * @return object|array|null
+	 */
+	public function getRes()
+	{
+		return $this->res;
+	}
+
+	public function setRes($res): static
+	{
+		$this->res = $res;
+		return $this;
+	}
+
+
+	public function getCode(): int
+	{
+		return $this->code ?? 200;
+	}
+
+	public function setCode(int $code = 200): static
+	{
+		$this->code = $code;
+		return $this;
+	}
+
+	public function saveEntity(EntityManagerInterface $entityManaegerInterface , $entity, bool $isUpdate = false): void
+	{
+		if(!$isUpdate){
+			$entityManaegerInterface->persist($entity);
+		}
+		$entityManaegerInterface->flush($entity);
+	}
+
+	public function removeEntity(EntityManagerInterface $entityManaegerInterface , $entity): void
+	{
+		$entityManaegerInterface->remove($entity);
+		$entityManaegerInterface->flush($entity);
+	}
+
+	public function handleFormValidation(ValidatorInterface $validator, string $type): object
+	{
+		$request = $this->getRequest();
+		$form = $this->createForm($type);
+		$entity = $form->handleRequest($request)->getData();
+			if ($entity === null) {
+				$payload = json_decode($request->getContent(), true);
+				$form->submit($payload);
+				$entity = $form->handleRequest($request)->getData();
+				if($entity === null){
+					throw new \RuntimeException('The form did not return a valid entity.');
+				}
+				if(isset($payload['id']) && $payload['id']){
+					$entity->setId($payload['id']);
+				}
+		}
+		$this->handleFormError($validator, $entity);
+		return $entity;
+	}
+
+	public function isAdmin(): void
+	{
+		$method = 'isAdmin';
+		if(!$this->getUser()->$method()){
+			throw new UnauthorizedException("No tiene autorización");
+		}
+	}
+
+	/**
+	 * @throws FormException Form errors.
+	 */
+	private function handleFormError(ValidatorInterface $validator, $entity): void
+	{
+		$violations = $validator->validate($entity);
+		$errors = [];
+		if (count($violations) > 0) {
+			foreach ($violations as $error) {
+				$errors[$error->getPropertyPath] = $error->getMessage();
+			}
+			throw new FormException('Verifique la información del formulario.', $errors, 400);
+		}
 	}
 }

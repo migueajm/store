@@ -6,12 +6,14 @@
 {% set user = app.session.get('user') ?? {username: 'Dashboard', modules: []} %}
 <div class="container-fluid vh-100">
     <div class="row h-100">
-        <div class="col-md-2 sidebar bg-dark text-light p-3 d-flex flex-column">
-            <div class="d-flex align-items-center mb-4">
+        <!-- Sidebar -->
+        <div class="col-md-2 sidebar bg-dark text-light d-flex flex-column p-3">
+            <div class="d-flex align-items-center mb-2">
                 {% set icon = {style: "width: 50px; height: 50px;"} %}
                 {% include "components/icon.html.twig" %}
-                <h4 class="text-white ms-2">{{ user.username }}</h4>    
+                <h4 class="text-white ms-2">{{ user.username }}</h4>
             </div>
+            <hr class="bg-light">
             <nav class="nav flex-column flex-grow-1">
                 {% for module in user.modules %}
                     {% set path = null %}
@@ -19,11 +21,12 @@
                         {% set path = path(module.path) %}
                     {% endif %}
                     {% set active = app.request.attributes.get('_route') == module.path ? 'active' : '' %}
-                    <a href="{{ path ? path : '#' ~ module.name }}" class="nav-link text-secondary {{active}}">{{ module.name }}</a>
+                    <a href="{{ path ? path : '#' ~ module.name }}" class="nav-link text-secondary {{ active }}">{{ module.name }}</a>
                 {% endfor %}
             </nav>
         </div>
-        <div class="col-md-10 p-4">
+        <!-- Main Content -->
+        <div class="col-md-10 overflow-auto" style="height: 100vh;">
             {% block dashboardBody %}{% endblock %}
         </div>
     </div>
