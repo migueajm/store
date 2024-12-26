@@ -2,62 +2,43 @@
 
 namespace App\Form;
 
-use App\Entity\Category;
-use App\Entity\Product;
+use App\Entity\User;
 use DateTimeImmutable;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ProductType extends AbstractType
+class UserType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('category', EntityType::class, [
-                'class' => Category::class,
-                'choice_label' => 'name',
-                'label' => 'Categoria',
+            ->add('username', TextType::class, [
+                'label' => 'Usuario',
                 'label_attr' => ['class' => "form-label"],
                 'attr' => ['class' => "form-control"],
                 'row_attr' => ['style' => 'position: relative', 'class' => 'col-md-6']
             ])
-            ->add('code', TextType::class, [
-                'label' => 'Codigo de barras',
-                'label_attr' => ['class' => "form-label"],
-                'attr' => ['class' => "form-control"],
-                'row_attr' => ['style' => 'position: relative', 'class' => 'col-md-6'],
-                'required' => false
-            ])
-            ->add('name', TextType::class, [
-                'label' => 'Producto',
+            ->add('firstname', TextType::class, [
+                'label' => 'Nombres',
                 'label_attr' => ['class' => "form-label"],
                 'attr' => ['class' => "form-control"],
                 'row_attr' => ['style' => 'position: relative', 'class' => 'col-md-6']
             ])
-            ->add('price', NumberType::class, [
-                'label' => 'Precio',
+            ->add('lastname', TextType::class, [
+                'label' => 'Apellidos',
                 'label_attr' => ['class' => "form-label"],
                 'attr' => ['class' => "form-control"],
                 'row_attr' => ['style' => 'position: relative', 'class' => 'col-md-6']
             ])
-            ->add('stock_quantity', NumberType::class, [
-                'label' => 'Existencia',
+            ->add('password', PasswordType::class, [
+                'label' => 'Contraseña',
                 'label_attr' => ['class' => "form-label"],
                 'attr' => ['class' => "form-control"],
                 'row_attr' => ['style' => 'position: relative', 'class' => 'col-md-6']
-            ])
-            ->add('description', TextareaType::class, [
-                'label' => 'Descripción',
-                'label_attr' => ['class' => "form-label"],
-                'attr' => ['class' => "form-control"],
-                'row_attr' => ['style' => 'position: relative', 'class' => 'col-md-6'],
-                'required' => false
-            ])
+                ])
             ->add('created_at', null, [
                 'widget' => 'single_text',
                 'label' => 'Fecha',
@@ -75,13 +56,12 @@ class ProductType extends AbstractType
                 'data' => new DateTimeImmutable()
             ])
         ;
-        $builder->setAttribute('row_attr', ['class' => 'row']);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Product::class,
+            'data_class' => User::class,
             'attr' => ['class' => 'row']
         ]);
     }

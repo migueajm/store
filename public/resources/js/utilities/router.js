@@ -59,6 +59,21 @@ class Router
 				});
 			return;
 		}
+		if (path.includes("/admin/user")) {
+			const key = "user";
+			import(`../${key}/${key}.js`)
+				.then(({ User }) => {
+					new User(
+						document.getElementById('btn-save-'+key),
+						document.getElementById('btn-new-'+key),
+						document.querySelector(`form[name=${key}]`)
+					);
+				})
+				.catch((error) => {
+					console.error("Error loading Dashboard module:", error);
+				});
+			return;
+		}
 		console.warn("Undefined url: " + path);
 	}
 }

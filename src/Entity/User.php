@@ -4,11 +4,13 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use App\Service\AuthenticationService;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`users`')]
@@ -21,12 +23,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\NotBlank]
     private ?string $username = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\NotBlank]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\NotBlank]
     private ?string $lastname = null;
 
     /**
@@ -39,7 +44,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
-    private ?string $password = null;
+    #[Assert\NotBlank]
+    public ?string $password = null;
 
     private ?string $token = null;
 
@@ -71,6 +77,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updated_at;
+    }
+    public function setUpdatedAt($updated_at): static
+    {
+        if(is_string($updated_at)) $updated_at = new DateTimeImmutable($updated_at);
+        $this->updated_at = $updated_at;
+        return $this;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getId(): ?int
@@ -175,14 +193,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getModules(): array
     {
         $modules = [
+            ['name' => 'Dashboard', 'path' => 'app_dashboard_index', 'class' => 'DashboardController'],
             ['name' => 'Ventas', 'path' => 'app_sales_index', 'class' => 'SalesController'],
             ['name' => 'Inventario', 'path' => 'app_stocktaking_index', 'class' => 'StocktakingController'],
             ['name' => 'Reportes', 'path' => 'app_report_index', 'class' => 'ReportController'],
             ['name' => 'Cerrar sesión', 'path' => 'app_authentication_sign_out', 'class' => 'AuthenticationController']
         ];
         if (in_array(AuthenticationService::ROLE_ADMIN, $this->roles)) {
+            $dasboard = $modules[0];
+            unset($modules[0]);
             $admin = [
-                ['name' => 'Dashboard', 'path' => 'app_dashboard_index', 'class' => 'DashboardController'],
+                $dasboard,
                 ['name' => 'Categorias', 'path' => 'app_category_index', 'class' => 'CategoryController'],
                 ['name' => 'Productos', 'path' => 'app_product_index', 'class' => 'ProductController'],
                 ['name' => 'Usuarios', 'path' => 'app_user_index', 'class' => 'UserController']
@@ -217,6 +238,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             }
         }
         return $this;
+    }
+
+    public function getData(): array
+    {
+        $user = get_object_vars($this);
+        unset($user['sale']);
+        unset($user['token']);
+        unset($user['password']);
+        $user['role'] = implode(',', $this->getRoles());
+        return $user;
     }
 
     /**

@@ -203,6 +203,9 @@ class AbstractService extends AbstractController
 				$getMethod = "get$key";
 				$isDate = "updatedat" === strtolower($key);
 				$value = $isDate ? new DateTimeImmutable() : $entity->$getMethod();
+				if(strtolower($key) === 'password'){
+					$value = AuthenticationService::encrypPassword($entity->$getMethod());
+				}
 				$oldEntity->$setMethod($value);
 			}
 			$entity = $oldEntity;
