@@ -7,6 +7,7 @@ use App\Exception\UnauthorizedException;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -87,7 +88,7 @@ class AbstractService extends AbstractController
 		}
 	}
 
-	public function getModuleAndTableProperties(array $text, array $head, string $action): array
+	public function getModuleAndTableProperties(array $text, array $head, string $action, array $modal): array
 	{
 		$title = $text[0];
 		$module = [
@@ -102,7 +103,7 @@ class AbstractService extends AbstractController
 			'body' => "No hay {$text[1]} registrados",
 			'count' => count($head)
 		];
-		return compact('title', 'module', 'table');
+		return compact('title', 'module', 'table', 'modal');
 	}
 
 	/**
@@ -203,6 +204,9 @@ class AbstractService extends AbstractController
 				$getMethod = "get$key";
 				$isDate = "updatedat" === strtolower($key);
 				$value = $isDate ? new DateTimeImmutable() : $entity->$getMethod();
+				if('password' === strtolower($key) && $value){
+					$value = AuthenticationService::encrypPassword($value);
+				}
 				$oldEntity->$setMethod($value);
 			}
 			$entity = $oldEntity;
@@ -226,6 +230,12 @@ class AbstractService extends AbstractController
 		$result = ucwords($result);
 		$result = str_replace(' ', '', $result);
 		return ucfirst($result);
+	}
+
+	public function createFormView(string $type, $entity = null): FormView
+	{
+		$form = $this->createForm($type, $entity);
+		return $form->createView();
 	}
 
 	/**

@@ -170,7 +170,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(?string $password): static
     {
         if(!$password) return $this;
-        $this->password = AuthenticationService::encrypPassword($password);
+        $this->password = $password;
         return $this;
     }
 
