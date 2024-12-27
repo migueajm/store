@@ -27,6 +27,11 @@ export class User{
 		this.showModalBtn.addEventListener('click', this.show);
 		const modal = document.getElementById('modal-form-user');
 		this.modal = new bootstrap.Modal(modal);
+		const button = document.querySelector('#user_password_update');
+		button.addEventListener('click', () => {
+			button.parentNode.hidden = true;
+			this.form.user_password.parentNode.parentNode.hidden = false;
+		});
 	}
 
 	async show({instance, data}) {
@@ -34,8 +39,16 @@ export class User{
 		form?.reset();
 		form.method = 'post';
 		form.removeAttribute('data-id');
+		form.user_password.parentNode.parentNode.hidden = false;
+		form.user_username.disabled = false;
+		form.user_password_update.parentNode.hidden = true;
+		form.user_password_update.disabled = true;
 		if(typeof data === 'object' && data.hasOwnProperty('id')){
 			form.dataset.id = data.id;
+			form.user_password.parentNode.parentNode.hidden = true;
+			form.user_username.disabled = true;
+			form.user_password_update.parentNode.hidden = false;
+			form.user_password_update.disabled = false;
 			form.method = 'put';
 			FormService.setData(form, data);
 		}
@@ -54,6 +67,7 @@ export class User{
 	async save(event) {
 		disbaledElement(event.target);
 		this.modal.hide();
+		this.form.user_username.disabled = false;
 		loader.show('Generando el usuario, espere por favor...');
 		if(this.form.dataset.hasOwnProperty('id') && this.form.dataset.id){
 			const formData = FormService.getData(this.form, true, false);

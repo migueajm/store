@@ -29,4 +29,22 @@
 button.form-symfony {
 	position: relative;
 	top: 0.75rem
-} 
+}
+
+.is-relative-for-icon-password {
+	position: relative;
+}
+
+.is-relative-for-icon-password input {
+	padding-right: 2.5rem;
+}
+
+i.show-password {
+	position: absolute;
+	display: block;
+	bottom: .5rem;
+	right: 1rem;
+
+	user-select: none;
+	cursor: pointer;
+}

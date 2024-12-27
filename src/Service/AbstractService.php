@@ -203,9 +203,6 @@ class AbstractService extends AbstractController
 				$getMethod = "get$key";
 				$isDate = "updatedat" === strtolower($key);
 				$value = $isDate ? new DateTimeImmutable() : $entity->$getMethod();
-				if(strtolower($key) === 'password'){
-					$value = AuthenticationService::encrypPassword($entity->$getMethod());
-				}
 				$oldEntity->$setMethod($value);
 			}
 			$entity = $oldEntity;
@@ -240,7 +237,7 @@ class AbstractService extends AbstractController
 		$errors = [];
 		if (count($violations) > 0) {
 			foreach ($violations as $error) {
-				$errors[$error->getPropertyPath] = $error->getMessage();
+				$errors[$error->getPropertyPath ?? 'default-error'] = $error->getMessage();
 			}
 			throw new FormException('Verifique la información del formulario.', $errors, 400);
 		}

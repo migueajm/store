@@ -6,6 +6,7 @@ use App\Entity\User;
 use DateTimeImmutable;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -37,8 +38,14 @@ class UserType extends AbstractType
                 'label' => 'Contraseña',
                 'label_attr' => ['class' => "form-label"],
                 'attr' => ['class' => "form-control"],
-                'row_attr' => ['style' => 'position: relative', 'class' => 'col-md-6']
-                ])
+                'row_attr' => ['style' => 'position: relative', 'class' => 'col-md-6'],
+                'required' => false
+            ])
+            ->add('password_update', SubmitType::class, [
+                'label' => 'Actualizar contraseña',
+                'attr' => ['class' => "btn btn-outline-success", 'disabled' => true],
+                'row_attr' => ['style' => 'position: relative', 'class' => 'col-md-6', 'hidden' => true]
+            ])
             ->add('created_at', null, [
                 'widget' => 'single_text',
                 'label' => 'Fecha',

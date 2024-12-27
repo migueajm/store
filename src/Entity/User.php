@@ -44,7 +44,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Assert\NotBlank]
     public ?string $password = null;
 
     private ?string $token = null;
@@ -168,9 +167,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
-    public function setPassword(string $password): static
+    public function setPassword(?string $password): static
     {
-        $this->password = $password;
+        if(!$password) return $this;
+        $this->password = AuthenticationService::encrypPassword($password);
         return $this;
     }
 

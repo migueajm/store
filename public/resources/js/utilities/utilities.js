@@ -97,6 +97,41 @@ const createModal = ({ id = "modal-default", size = "md", title = "Modal Title",
 	});
 }
 
+const createIconShowPassword = (input) => {
+  if (
+    typeof input != "object" ||
+    input.hasOwnProperty("type") ||
+    input.type != "password"
+  )
+    return;
+  const icon = document.createElement("i");
+  icon.setAttribute("class", "bi bi-eye show-password");
+  icon.addEventListener('click', showPassword);
+  const inputId = input.id ?? input.name;
+  icon.dataset.inputMatch = inputId;
+  const parentNode = input.parentNode;
+  const div = document.createElement("div");
+  div.classList.add("is-relative-for-icon-password");
+  input.remove();
+  div.appendChild(input);
+  div.appendChild(icon);
+  parentNode.appendChild(div);
+};
+
+const showPassword = (e) => {
+  const icon = e.target;
+  const input = document.getElementById(icon.dataset.inputMatch);
+  if (input.type === "password") {
+    icon.classList.remove("bi-eye");
+    icon.classList.add("bi-eye-slash");
+    input.type = "text";
+    return;
+  }
+  icon.classList.remove("bi-eye-slash");
+  icon.classList.add("bi-eye");
+  input.type = "password";
+};
+
 const fetchService = new FetchService(window.origin)
 fetchService.setErrorFunction(handleFetchError);
 export {
@@ -105,5 +140,6 @@ export {
 	createModal,
 	disbaledElement,
 	formDataToJson,
-	handleFetchError
+	handleFetchError,
+	createIconShowPassword
 };
