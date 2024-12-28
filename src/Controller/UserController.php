@@ -24,12 +24,9 @@ class UserController extends UserService
     #[Route('/index', name: '_index')]
     public function index(): Response
     {
-        $userForm = $this->createForm(UserType::class, new User());
-        $parameters = array_merge(
-            $this->getModuleAndTableProperties(...$this->getProperties()),
-            compact('userForm')
-        );
-        return $this->render('user/index.html.twig', $parameters);
+        $this->validateUserControllerAccess(self::class);
+        $parameters = $this->getModuleAndTableProperties(...$this->getProperties());
+        return $this->render('components/base.dashboard.html.twig', $parameters);
     }
 
     #[Route('/all', name: '_all', methods:['GET'])]
@@ -42,6 +39,7 @@ class UserController extends UserService
     #[Route('/save/{id?}', name: '_save', methods:['POST', 'PUT', 'DELETE'])]
     public function saveAction(ValidatorInterface $validatorInterface, ?User $user = null): JsonResponse
     {
+        $this->validateUserControllerAccess(self::class);
         if($this->getRequest()->getMethod() === Request::METHOD_DELETE){
             if(!$user instanceof User){
                 throw new BadRequestException("Undefined category.", 400);

@@ -40,7 +40,7 @@ class Router
 					);
 				})
 				.catch((error) => {
-					console.error("Error loading Dashboard module:", error);
+					console.error("Error loading Product module:", error);
 				});
 			return;
 		}
@@ -55,7 +55,7 @@ class Router
 					);
 				})
 				.catch((error) => {
-					console.error("Error loading Dashboard module:", error);
+					console.error("Error loading Category module:", error);
 				});
 			return;
 		}
@@ -70,8 +70,37 @@ class Router
 					);
 				})
 				.catch((error) => {
-					console.error("Error loading Dashboard module:", error);
+					console.error("Error loading User module:", error);
 				});
+			return;
+		}
+		if (path.includes("/app/sales")) {
+			let key = "sale";
+			if(document.querySelector(`form[name=${key}]`)){
+				import(`../${key}/${key}.js`)
+					.then(({ Sale }) => {
+						new Sale(
+							document.getElementById('btn-save-'+key),
+							document.getElementById('btn-new-'+key),
+							document.querySelector(`form[name=${key}]`)
+						);
+					})
+					.catch((error) => {
+						console.error("Error loading Sale module:", error);
+					});
+				return;
+			}
+			import(`../${key}/sale_detail.js`)
+					.then(({ SaleDetail }) => {
+						new SaleDetail(
+							document.getElementById('btn-finish-sale'),
+							document.getElementById('btn-init-sale'),
+							document.querySelector(`form[name=sale_detail]`)
+						);
+					})
+					.catch((error) => {
+						console.error("Error loading Sale module:", error);
+					});
 			return;
 		}
 		console.warn("Undefined url: " + path);

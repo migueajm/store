@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Product;
+use App\Form\ProductType;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -19,10 +20,24 @@ class ProductService extends AbstractService
 
 	public function getProperties(): array
 	{
+		$formHtml = $this->renderView('components/form.html.twig', [
+			'form' => $this->createFormView(ProductType::class, new Product())
+		]);
 		return [
 			["Productos", 'productos', 'Agrega producto', 'table-products'],
 			['#', 'Nombre', 'Descripción', 'Categoria', 'Precio', 'Existencia', 'Acciones'],
-			'new-product'
+			'new-product',
+			'modal' => [
+				'id' => 'modal-form-product',
+				'size' => 'xl',
+				'title' => 'Información del producto',
+				'body' => $formHtml, 
+				'close' => 'Cancelar',
+				'action' => [
+						'id' => 'btn-save-product',
+						'text' => 'Guardar',
+				],
+			]
 		];
 	}
 

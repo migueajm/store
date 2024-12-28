@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\SalesRepository;
+use App\Repository\SaleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: SalesRepository::class)]
+#[ORM\Entity(repositoryClass: SaleRepository::class)]
 class Sale
 {
     #[ORM\Id]
@@ -17,25 +17,25 @@ class Sale
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $total_amount = null;
+    public ?string $total_amount = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $sale_date = null;
+    public ?\DateTimeImmutable $sale_date = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $payment_method = null;
+    public ?string $payment_method = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "sale")]
     #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: false)]
-    private ?User $user = null;
+    public ?User $user = null;
 
     #[ORM\OneToMany(mappedBy: "sale", targetEntity: SaleDetail::class, cascade: ["persist", "remove"])]
     private Collection $details;
 
     public function __construct()
-{
-    $this->details = new ArrayCollection();
-}
+    {
+        $this->details = new ArrayCollection();
+    }
 
     /**
      * @return Collection|SaleDetail[]
@@ -67,6 +67,12 @@ class Sale
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getTotalAmount(): ?string
@@ -111,5 +117,14 @@ class Sale
     {
         $this->user = $user;
         return $this;
+    }
+
+    public function getData(): array
+    {
+        $sale = get_object_vars($this);
+        $sale['user'] = $this->user->getId();
+        $sale['user_name'] = $this->user->getUsername();
+        unset($sale['details']);
+        return $sale;
     }
 }

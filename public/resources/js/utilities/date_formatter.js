@@ -1,10 +1,10 @@
 export class DateFormatter {
   constructor(locale = 'en-US') {
-		this.locale = locale;
-		this.options = {
-			date: { day: '2-digit', month: '2-digit', year: 'numeric' },
-			hour: { hour: '2-digit', minute: '2-digit', second: '2-digit' }
-		};
+    this.locale = locale;
+    this.options = {
+      date: { day: '2-digit', month: '2-digit', year: 'numeric' },
+      hour: { hour: '2-digit', minute: '2-digit', second: '2-digit' }
+    };
   }
 
   getHour(date = new Date()) {
@@ -17,5 +17,12 @@ export class DateFormatter {
 
   getFullDate(locale = 'en-US') {
     return `${this.getDate()} ${this.getHour}`;
+  }
+
+  static getFormattedDateISO() {
+    const today = new Date();
+    const datePart = today.toISOString().split('T')[0];
+    const formattedDate = `${datePart}T12:00:00`;
+    return formattedDate;
   }
 }

@@ -43,6 +43,15 @@ const dateColumn = {
 			return data;
 		},
 	},
+	saleAt: {
+		data: 'sale_date',
+		render: function (data, type, row) {
+			if (type === 'display' || type === 'filter') {
+				return getDate(data, true)
+			}
+			return data;
+		},
+	}
 }
 
 const getDate = (date, onlyDate = false) => {

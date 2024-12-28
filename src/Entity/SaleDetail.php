@@ -90,4 +90,13 @@ class SaleDetail
         $this->product = $product;
         return $this;
     }
+
+    public function getData(): array
+    {
+        $sale = get_object_vars($this);
+        $sale['sale'] = $this->sale->getId();
+        $sale['product'] = $this->product->getId();
+        $sale['product_name'] = $this->product->getName();
+        return $sale;
+    }
 }

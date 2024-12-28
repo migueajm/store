@@ -186,6 +186,20 @@ class AbstractService extends AbstractController
 	}
 
 	/**
+	 * Si no es un usario admin, se genera una exception de la clase UnauthorizedException.
+	 * @throws UnauthorizedException
+	 */
+	public function isAdminBool(): bool
+	{
+		try {
+			$this->isAdmin();
+			return true;
+		} catch (\Throwable $th) {
+			return false;
+		}
+	}
+
+	/**
 	 * Se encarga de procesar la entidad para poblarla de los datos obtenidos del payload.
 	 * @throws FormException The entity identifier was not defined.
 	 */

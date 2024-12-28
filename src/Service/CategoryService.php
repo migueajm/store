@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Category;
+use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -19,10 +20,24 @@ class CategoryService extends AbstractService
 
 	public function getProperties(): array
 	{
+		$formHtml = $this->renderView('components/form.html.twig', [
+			'form' => $this->createFormView(CategoryType::class, new Category())
+		]);
 		return [
 			["Categorias", 'categorias', 'Agrega categoria', 'table-category'],
 			['#', 'Nombre', 'Descripción', 'Creado', 'Modificado', 'Acciones'],
-			'new-category'
+			'new-category',
+			'modal' => [
+				"id" => 'modal-form-category',
+				"size" => 'md',
+				"title" => 'Información de la categoria',
+				"body" => $formHtml,
+				"close" => 'Cancelar',
+				"action" => [
+						"id" => 'btn-save-category',
+						"text" => 'Guardar'
+				]
+			]
 		];
 	}
 

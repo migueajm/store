@@ -1,0 +1,37 @@
+<div class="mt-4">
+	{% set module = {
+		title: "Punto de venta",
+		id: "btn-init-sale",
+		action: "Iniciar venta"
+	} %}
+	{% include "components/titleModule.html.twig" %}
+	<div class="row">
+		<div class="col-md-8">
+			{% set table = tableProduct %}
+			{% set card = {
+				header: {
+					class: "bg-active text-white text-bold",
+					title: "Productos"
+				},
+				body: {
+					path: "components/table.html.twig"
+				}
+			} %}
+			{% include "components/card.html.twig" %}
+		</div>
+		<div class="col-md-4">
+			{% set card = {
+				header: {
+					class: "bg-active text-white text-bold",
+					title: "Detalle"
+				},
+				body: form(formSaleDetail)
+			} %}
+			{% include "components/card.html.twig" %}
+		</div>
+	</div>
+	<div class="d-flex justify-content-between align-items-center mt-4">
+		<h4>Total: <span id="total-sale-span">$0.00</span></h4>
+		<a class="btn btn-success" id="btn-finish-sale">Finalizar compra</a>
+	</div>
+</div>

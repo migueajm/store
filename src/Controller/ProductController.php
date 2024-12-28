@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Category;
 use App\Entity\Product;
 use App\Form\ProductType;
 use App\Service\ProductService;
@@ -25,12 +24,9 @@ class ProductController extends ProductService
     #[Route('/index', name: '_index', methods:['GET'])]
     public function index(): Response
     {
-        $productForm = $this->createForm(ProductType::class, new Product);
-        $parameters = array_merge(
-            $this->getModuleAndTableProperties(...$this->getProperties()),
-            compact('productForm')
-        );
-        return $this->render('product/index.html.twig', $parameters);
+        $this->validateUserControllerAccess(self::class);
+        $parameters = $this->getModuleAndTableProperties(...$this->getProperties());
+        return $this->render('components/base.dashboard.html.twig', $parameters);
     }
 
     #[Route('/all', name: '_all', methods:['GET'])]
@@ -43,6 +39,7 @@ class ProductController extends ProductService
     #[Route('/save/{id?}', name: '_save', methods:['POST', 'PUT', 'DELETE'])]
     public function saveAction(ValidatorInterface $validatorInterface, ?Product $product = null): JsonResponse
     {
+        $this->validateUserControllerAccess(self::class);
         if($this->getRequest()->getMethod() === Request::METHOD_DELETE){
             if(!$product instanceof Product){
                 throw new BadRequestException("Undefined product.", 400);

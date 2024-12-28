@@ -1,4 +1,5 @@
 import { FormError } from "./error/form_error.js";
+import { HtmlFormElementExpectedError } from "./error/html_form_element_expected_error.js";
 
 export class FormErrorManager {
 	/**
@@ -7,7 +8,7 @@ export class FormErrorManager {
 	 */
 	constructor(form) {
 		if (!(form instanceof HTMLFormElement)) {
-			throw new Error('An HTMLFormElement must be provided.');
+			throw new HtmlFormElementExpectedError('An HTMLFormElement must be provided.');
 		}
 		this.form = form;
 		this.init();
@@ -39,7 +40,11 @@ export class FormErrorManager {
 		const errorElement = document.createElement('div');
 		errorElement.className = 'error-message';
 		errorElement.textContent = errorMessage;
-		field.parentNode.appendChild(errorElement);
+		if(field.parentNode.querySelector('i')){
+			field.parentNode.parentNode.appendChild(errorElement);
+		}else {
+			field.parentNode.appendChild(errorElement);
+		}
 		field.classList.add('error-input');
 	}
 
@@ -51,7 +56,12 @@ export class FormErrorManager {
 	clearError(fieldName) {
 		const field = this.form.querySelector(`[name="${fieldName}"]`);
 		if (!field) return;
-		const errorElement = field.parentNode.querySelector('.error-message');
+		let errorElement = null
+		if(field.parentNode.querySelector('i')){
+			errorElement = field.parentNode.parentNode.querySelector('.error-message');
+		}else {
+			errorElement = field.parentNode.querySelector('.error-message');
+		}
 		if (errorElement) {
 			errorElement.remove();
 		}

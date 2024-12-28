@@ -105,6 +105,7 @@ export class DatatableService {
 
     destroy() {
         if (this.datatableInstance) {
+            this.datatableInstance.clear();
             this.datatableInstance.destroy();
         }
     }

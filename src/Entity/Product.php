@@ -81,7 +81,7 @@ class Product
 
     public function getCode(): ?string
     {
-        return $this->name;
+        return $this->code;
     }
 
     public function setCode(string $code): static

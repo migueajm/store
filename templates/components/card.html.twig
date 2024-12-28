@@ -4,8 +4,12 @@
 			<h5 class="card-title">{{(card.header.title ?? 'Card title')|raw}}</h5>
 		</div>
 	{% endif %}
-	<div class="card-body {{card.body.class ?? ''}}">	
-		{{(card.body.body ?? card.body ?? 'Card body')|raw}}
+	<div class="card-body {{card.body.class ?? ''}}">
+		{% if card.body is defined and card.body.path is defined %}
+			{% include card.body.path %}
+		{% else %}
+			{{(card.body.body ?? card.body ?? 'Card body')|raw}}
+		{% endif %}
 	</div>
 	{% if card.footer is defined %}
 		<div class="card-footer">

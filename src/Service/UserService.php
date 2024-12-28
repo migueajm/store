@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\User;
+use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -20,10 +21,24 @@ class UserService extends AbstractService
 
 	public function getProperties(): array
 	{
+		$formHtml = $this->renderView('components/form.html.twig', [
+			'form' => $this->createFormView(UserType::class, new User())
+		]);
 		return [
 			["Usuarios", 'usuarios', 'Agrega usuario', 'table-users'],
 			['#', 'Nombre', 'Apellido', 'Usuario', 'Rol', 'Acciones'],
-			'new-user'
+			'new-user',
+			'modal' => [
+				'id' => 'modal-form-user',
+				'size' => 'xl',
+				'title' => 'Información del usuario',
+				'body' => $formHtml, 
+				'close' => 'Cancelar',
+				'action' => [
+						'id' => 'btn-save-user',
+						'text' => 'Guardar',
+				],
+			]
 		];
 	}
 

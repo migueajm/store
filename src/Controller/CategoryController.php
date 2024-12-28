@@ -24,12 +24,8 @@ class CategoryController extends CategoryService
     #[Route('/index', name: '_index')]
     public function index(): Response
     {
-        $categoryForm = $this->createForm(CategoryType::class, new Category());
-        $parameters = array_merge(
-            $this->getModuleAndTableProperties(...$this->getProperties()),
-            compact('categoryForm')
-        );
-        return $this->render('category/index.html.twig', $parameters);
+        $parameters = $this->getModuleAndTableProperties(...$this->getProperties());
+        return $this->render('components/base.dashboard.html.twig', $parameters);
     }
 
     #[Route('/all', name: '_all', methods:['GET'])]
