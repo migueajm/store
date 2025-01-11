@@ -11,6 +11,7 @@ use App\Repository\SaleDetailRepository;
 use App\Repository\SaleRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class SalesService extends AbstractService
@@ -63,16 +64,27 @@ class SalesService extends AbstractService
     return $this->handleDataToJsonResponse($this->saleRepository->findAll());
 	}
 
-	public function save(ValidatorInterface $validatorInterface, string $type, ?Sale $category = null): void
+	public function save(ValidatorInterface $validatorInterface, string $type, ?Sale $sale = null): void
 	{
-		$entity = $this->populateEntity($validatorInterface, $type, $category);
+		if($this->getRequest()->getMethod() === Request::METHOD_PUT){
+			$body = json_decode($this->getRequest()->getContent());
+			$entity = $this->saleRepository->find($sale->getId());
+			$entity->setTotalAmount($body->total_amount);
+		}else {
+			$entity = $this->populateEntity($validatorInterface, $type, $sale);
+		}
 		$this->saveEntity($this->entityManagerInterface, $entity);
 	}
 	
-	public function delete(Sale $category): void
+	public function delete(Sale $sale): void
 	{
 		$this->isAdmin();
-		$this->removeEntity($this->entityManagerInterface, $category);
+		$this->removeEntity($this->entityManagerInterface, $sale);
+	}
+
+	public function deleteDetail(SaleDetail $saleDetail): void
+	{
+		$this->removeEntity($this->entityManagerInterface, $saleDetail);
 	}
 
 	public function generate(): int
@@ -97,7 +109,27 @@ class SalesService extends AbstractService
 
 	public function saveDetail(ValidatorInterface $validatorInterface, ?SaleDetail $saleDetail)
 	{
-		$entity = $this->populateEntity($validatorInterface, SaleDetailType::class, $saleDetail);
+		$httpMethod = $this->getRequest()->getMethod();
+		$saleDetailByProductId = null;
+		$saleDetail = null;
+		if($httpMethod === Request::METHOD_POST){
+			$saleDetail = $this->handleFormValidation($validatorInterface, SaleDetailType::class);
+			$saleDetailByProductId = $this->saleDetailRepository->findOneByProductAndSale(
+				$saleDetail->getProduct()->getId(),
+				$saleDetail->getSale()->getId()
+			);
+		}
+		if($saleDetailByProductId instanceof SaleDetail){
+			$quantity = $saleDetail->getQuantity() + $saleDetailByProductId->getQuantity();
+			$total = $quantity * $saleDetailByProductId->getUnitPrice();
+			$saleDetailByProductId->setQuantity($quantity);
+			$saleDetailByProductId->setTotalPrice($total);
+			$entity = $saleDetailByProductId;
+		}else {
+			$entity = $this->populateEntity($validatorInterface, SaleDetailType::class, $saleDetail);
+		}
 		$this->saveEntity($this->entityManagerInterface, $entity);
+		$total = $this->saleDetailRepository->getTotalBySale($entity->getSale()->getId());
+		$this->setRes(compact('total'));
 	}
 }

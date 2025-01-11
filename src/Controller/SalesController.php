@@ -84,11 +84,18 @@ class SalesController extends SalesService
         return $this->json($this->findDetailBySaleId($saleId));
     }
 
-    #[Route('/detail/save/{id?}', name: '_detail_save', methods:['POST', 'PUT'])]
+    #[Route('/detail/save/{id?}', name: '_detail_save', methods:['POST', 'PUT', 'DELETE'])]
     public function saveDetailAction(ValidatorInterface $validatorInterface, ?SaleDetail $saleDetail = null): JsonResponse
     {
         $this->validateUserControllerAccess(self::class);
-        $this->saveDetail($validatorInterface, $saleDetail);
+        if($this->getRequest()->getMethod() === Request::METHOD_DELETE){
+            if(!$saleDetail instanceof SaleDetail){
+                throw new BadRequestException("Undefined sale detail.", 400);
+            }
+            $this->deleteDetail($saleDetail);
+        }else{
+            $this->saveDetail($validatorInterface, $saleDetail);
+        }
         return $this->json($this->getRes(), $this->getCode());
     }
 }

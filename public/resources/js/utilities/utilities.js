@@ -130,6 +130,14 @@ const showPassword = (e) => {
   input.type = "password";
 };
 
+const getCurrencyMXN = number => {
+	if(typeof number != 'number') return number;
+	return number.toLocaleString("es-MX", {
+    style: "currency",
+    currency: "MXN"
+});
+}
+
 const fetchService = new FetchService(window.origin)
 fetchService.setErrorFunction(handleFetchError);
 export {
@@ -139,5 +147,6 @@ export {
 	disbaledElement,
 	formDataToJson,
 	handleFetchError,
-	createIconShowPassword
+	createIconShowPassword,
+	getCurrencyMXN
 };

@@ -16,28 +16,32 @@ class SaleDetailRepository extends ServiceEntityRepository
         parent::__construct($registry, SaleDetail::class);
     }
 
-    //    /**
-    //     * @return SaleDetail[] Returns an array of SaleDetail objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Obtiene el un detalle de venta de acuerdo a un producto y una venta.
+     *
+     * @param int $product ID del producto.
+     * @param int $sale ID de la venta.
+     */
+    public function findOneByProductAndSale(int $product, int $sale): ?SaleDetail
+    {
+        return $this->findOneBy(compact('product', 'sale'));
+    }
 
-    //    public function findOneBySomeField($value): ?SaleDetail
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * Obtiene el total de todos los detalles de una venta.
+     *
+     * @param int $saleId ID de la venta.
+     * @return string|null Total de la venta en formato decimal, o null si no hay detalles.
+     */
+    public function getTotalBySale(int $saleId): float
+    {
+        $qb = $this->createQueryBuilder('sd');
+
+        $total = $qb->select('SUM(sd.total_price) as total')
+            ->where('sd.sale = :saleId')
+            ->setParameter('saleId', $saleId)
+            ->getQuery()
+            ->getSingleScalarResult();
+        return (float) ($total ?? 0.0);
+    }
 }
