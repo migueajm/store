@@ -201,6 +201,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         ];
         if (in_array(AuthenticationService::ROLE_ADMIN, $this->roles)) {
             $dasboard = $modules[0];
+            $modules[2]['path'] = 'app_stocktaking_admin_index';
             unset($modules[0]);
             $admin = [
                 $dasboard,

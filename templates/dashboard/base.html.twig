@@ -19,6 +19,9 @@
                     {% set path = null %}
                     {% if module.path is defined %}
                         {% set path = path(module.path) %}
+                        {% if module.path == 'app_authentication_sign_out' %}
+                            <hr class="bg-white">
+                        {% endif %}
                     {% endif %}
                     {% set active = app.request.attributes.get('_route') == module.path ? 'active' : '' %}
                     <a href="{{ path ? path : '#' ~ module.name }}" class="nav-link text-secondary {{ active }}">{{ module.name }}</a>

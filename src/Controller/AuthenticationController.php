@@ -10,6 +10,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[Route('/', 'app_authentication')]
 class AuthenticationController extends AuthenticationService
@@ -17,6 +18,9 @@ class AuthenticationController extends AuthenticationService
 	#[Route('', name: '_main', methods:['GET'])]
 	public function index(): Response
 	{
+		if($this->getUser() instanceof UserInterface){
+			return $this->redirectToRoute('app_dashboard_index');
+		}
 		return $this->render('security/index.html.twig');
 	}
 

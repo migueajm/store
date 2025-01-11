@@ -88,14 +88,16 @@ class AbstractService extends AbstractController
 		}
 	}
 
-	public function getModuleAndTableProperties(array $text, array $head, string $action, array $modal): array
+	public function getModuleAndTableProperties(array $text, array $head, ?string $action, array $modal): array
 	{
 		$title = $text[0];
+		$id = $action ? 'btn-'.$action : $action;
+		$href = $id ? $action : 'default';
 		$module = [
 			'title' => "Gestión de {$text[1]}",
-			'id' => "btn-$action",
+			'id' => $id,
 			'action' => $text[2],
-			'href' => "#{$action}"
+			'href' => "#{$href}"
 		];
 		$table = [
 			'id' => $text['3'],
