@@ -120,10 +120,10 @@ export class SaleDetail {
 			payment_method: "Efectivo",
 			user: null
 		};
-		//const data = await fetchService.post(url, body);
-		instance.form.sale_detail_sale.value = 1//data.id;
+		const data = await fetchService.post(url, body);
+		instance.form.sale_detail_sale.value = data.id;
 		instance.form.hidden = false;
-		return 1//data.id;
+		return data.id;
 	}
 
 	async finishSale({instance, event}) {
