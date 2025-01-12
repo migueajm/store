@@ -15,13 +15,13 @@ class InventoryMovement
 
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: "inventoryMovements")]
     #[ORM\JoinColumn(name: "product_id", referencedColumnName: "id", nullable: false)]
-    private ?Product $product = null;
+    public ?Product $product = null;
 
     #[ORM\Column(type: "integer")]
-    private int $quantityChange;
+    public int $quantityChange;
 
     #[ORM\Column(type: "string", length: 255)]
-    private string $reason;
+    public string $reason;
 
     #[ORM\Column(type: "datetime")]
     private \DateTimeInterface $createdAt;
@@ -31,6 +31,12 @@ class InventoryMovement
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getProduct(): ?Product
@@ -79,5 +85,12 @@ class InventoryMovement
         $this->createdAt = $createdAt;
 
         return $this;
+    }
+
+    public function toArray()
+    {
+        $stocktaking = get_object_vars($this);
+        $stocktaking['product'] = $this->product->getName();
+        return $stocktaking;
     }
 }

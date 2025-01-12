@@ -9,7 +9,8 @@ class ReportService extends AbstractService
 		return [
 			["Reportes", 'reportes', 'Generar reporte', 'table-reports'],
 			['#', 'Nombre', 'Descripción', 'Categoria', 'Precio', 'Stock', 'Acciones'],
-			'generate-report'
+			'generate-report',
+			[]
 		];
 	}
 }

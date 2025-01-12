@@ -28,7 +28,6 @@ class Router
 				});
 			return;
 		}
-	
 		if (path.includes("/admin/product")) {
 			const key = "product";
 			import(`../${key}/${key}.js`)
@@ -101,6 +100,33 @@ class Router
 					.catch((error) => {
 						console.error("Error loading Sale module:", error);
 					});
+			return;
+		}
+		if (path.includes("/app/stocktaking/admin")) {
+			const key = "stocktaking";
+			import(`../${key}/${key}.js`)
+				.then(({ Stocktaking }) => {
+					new Stocktaking(
+						document.getElementById('btn-product-stock')
+					);
+				})
+				.catch((error) => {
+					console.error("Error loading stocktaking module:", error);
+				});
+			return;
+		}
+		if (path.includes("/app/stocktaking")) {
+			const key = "stock";
+			import(`../${key}/${key}.js`)
+				.then(({ Stock }) => {
+					new Stock(
+						document.getElementById('btn-stocktaking-history'),
+
+					);
+				})
+				.catch((error) => {
+					console.error("Error loading stock module:", error);
+				});
 			return;
 		}
 		console.warn("Undefined url: " + path);
